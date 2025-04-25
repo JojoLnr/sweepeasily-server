@@ -2,8 +2,10 @@ from flask import Flask, jsonify
 import firebase_admin
 from firebase_admin import credentials, db
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, origins=["https://sweepeasily.com"])
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate("sweepeasily-credentials.json")
