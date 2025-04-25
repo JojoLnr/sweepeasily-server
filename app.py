@@ -1,8 +1,8 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, db
 import os
-from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, origins=["https://sweepeasily.com"])
@@ -27,6 +27,11 @@ def get_instructions():
 @app.route("/batch/<batch_name>", methods=["GET"])
 def get_batch(batch_name):
     try:
+        # Update click count in the database
+        count_ref = db.reference(f"batch_clicks/{batch_name}")
+        current = count_ref.get() or 0
+        count_ref.set(current + 1)
+        
         ref = db.reference(batch_name)
         data = ref.get()
 
