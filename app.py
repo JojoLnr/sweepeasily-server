@@ -57,12 +57,29 @@ def get_all_casinos():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+import requests
+from flask import Flask, jsonify
 
-@app.route("/image/<path:image_name>")
+app = Flask(__name__)
+
+# Base URL for raw GitHub content (use your actual GitHub username and repo name)
+base_url = "https://raw.githubusercontent.com/JojoLnr/sweepeasily-server/main/GithubImages/"
+
+@app.route("/image/<image_name>", methods=["GET"])
 def get_image(image_name):
-    base_url = "https://raw.githubusercontent.com/JojoLnr/sweepeasily-server/main/GithubImages/"
-    full_url = base_url + image_name
-    return redirect(full_url)
+    try:
+        # Construct the full URL for the image
+        image_url = base_url + image_name
+        
+        # Check if the image exists by sending a HEAD request
+        response = requests.head(image_url)
+        if response.status_code == 200:
+            # If the image exists, return the URL
+            return jsonify({'success': True, 'image_url': image_url})
+        else:
+            return jsonify({'success': False, 'error': 'Image not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == "__main__":
     app.run()
