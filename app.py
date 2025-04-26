@@ -44,5 +44,18 @@ def get_batch(batch_name):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route("/casinos", methods=["GET"])
+def get_all_casinos():
+    try:
+        ref = db.reference("_casinos")
+        data = ref.get()
+
+        if not data:
+            return jsonify({'success': True, 'casinos': {}})
+
+        return jsonify({'success': True, 'casinos': data})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == "__main__":
     app.run()
