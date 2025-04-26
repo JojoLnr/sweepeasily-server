@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, redirect
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, db
@@ -56,6 +56,13 @@ def get_all_casinos():
         return jsonify({'success': True, 'casinos': data})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route("/image/<path:image_name>")
+def get_image(image_name):
+    base_url = "https://raw.githubusercontent.com/JojoLnr/sweepeasily-server/main/GithubImages/"
+    full_url = base_url + image_name
+    return redirect(full_url)
 
 if __name__ == "__main__":
     app.run()
