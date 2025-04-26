@@ -65,21 +65,18 @@ app = Flask(__name__)
 # Base URL for raw GitHub content (use your actual GitHub username and repo name)
 base_url = "https://raw.githubusercontent.com/JojoLnr/sweepeasily-server/main/GithubImages/"
 
-@app.route("/image/<image_name>", methods=["GET"])
-def get_image(image_name):
+@app.route("/image/<path:image_path>", methods=["GET"])
+def get_image(image_path):
     try:
-        # Construct the full URL for the image
-        image_url = base_url + image_name
-        
-        # Check if the image exists by sending a HEAD request
-        response = requests.head(image_url)
-        if response.status_code == 200:
-            # If the image exists, return the URL
-            return jsonify({'success': True, 'image_url': image_url})
-        else:
-            return jsonify({'success': False, 'error': 'Image not found'}), 404
+        # Construct the full URL to the raw GitHub file
+        image_url = base_url + image_path
+
+        # You can choose to fetch the image and return the raw content if needed, or just the URL
+        return jsonify({"success": True, "image_url": image_url})
+
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run()
