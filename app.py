@@ -97,5 +97,22 @@ def get_casinos():
         print("❌ Error retrieving casinos:", e)
         return jsonify({"success": False, "message": str(e)}), 500
 
+@app.route('/get_instructions/<casino_key>', methods=['GET'])
+def get_instructions(casino_key):
+    try:
+        # Access the specific casino under _casinos
+        ref = db.reference(f'_casinos/{casino_key}')
+        instructions = ref.get()
+
+        if instructions is None:
+            return jsonify({"success": False, "message": "Casino not found."}), 404
+        
+        instructions = instructions.replace("--/n--", "\n")
+        return jsonify({"success": True, "instructions": instructions})
+
+    except Exception as e:
+        print(f"❌ Error retrieving instructions for {casino_key}:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
+
 if __name__ == "__main__":
     app.run()
