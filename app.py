@@ -78,5 +78,24 @@ def get_image(image_path):
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route('/get_casinos', methods=['GET'])
+def get_casinos():
+    try:
+        # Access the "_casinos" node
+        ref = db.reference('_casinos')
+        data = ref.get()
+
+        if data is None:
+            return jsonify({"success": False, "message": "No data found."}), 404
+
+        # Get all keys inside _casinos
+        casino_keys = list(data.keys())
+
+        return jsonify({"success": True, "casinos": casino_keys})
+
+    except Exception as e:
+        print("❌ Error retrieving casinos:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
+
 if __name__ == "__main__":
     app.run()
