@@ -24,6 +24,9 @@ def get_instructions():
     keys = list(data.keys()) if data else []
     return jsonify({"keys": keys})
 
+
+
+
 @app.route("/batch/<batch_name>", methods=["GET"])
 def get_batch(batch_name):
     try:
@@ -32,8 +35,8 @@ def get_batch(batch_name):
         current = count_ref.get() or 0
         count_ref.set(current + 1)
 
-        # Reference to the batch in Firebase
-        ref = db.reference(batch_name)
+        # Adjust path if needed based on database structure
+        ref = db.reference(f"batches/{batch_name}")  # Modify if data is stored under 'batches'
         data = ref.get()
 
         if not data:
@@ -45,6 +48,12 @@ def get_batch(batch_name):
         return jsonify({'success': True, 'urls': urls})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+
+
+
+
 
 @app.route("/casinos", methods=["GET"])
 def get_all_casinos():
