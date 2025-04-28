@@ -18,14 +18,6 @@ firebase_admin.initialize_app(cred, {
 def home():
     return jsonify({"message": "Backend is working!"})
 
-@app.route('/instructions')
-def get_instructions():
-    ref = db.reference("/")  # Root of the database
-    data = ref.get()
-    keys = list(data.keys()) if data else []
-    return jsonify({"keys": keys})
-
-
 
 
 @app.route("/batch/<batch_name>", methods=["GET"])
