@@ -27,7 +27,7 @@ def get_instructions():
 
 
 
-@app.route('/batch/<batch_name>', methods=["GET"])
+@app.route("/batch/<batch_name>", methods=["GET"])
 def get_batch(batch_name):
     try:
         # Update click count in the database
@@ -36,7 +36,7 @@ def get_batch(batch_name):
         count_ref.set(current + 1)
 
         # Adjust path if needed based on database structure
-        ref = db.reference(f"batches/{batch_name}")  # Modify if data is stored under 'batches'
+        ref = db.reference(batch_name)  # Assuming the batch is stored directly at root level
         data = ref.get()
 
         if not data:
@@ -48,6 +48,7 @@ def get_batch(batch_name):
         return jsonify({'success': True, 'urls': urls})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 
 
