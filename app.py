@@ -3,6 +3,7 @@ from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, db
 import os
+import requests
 
 app = Flask(__name__)
 CORS(app, origins=["https://sweepeasily.com"])
@@ -27,36 +28,28 @@ def get_instructions():
 
 
 
-@app.route("/get_all_keys", methods=["GET"])
-def get_all_keys():
-    def recursive_fetch(ref, level=0):
-        """Recursively fetch all keys and print their level."""
-        data = ref.get()
-        
-        if data is None:
-            return []
-
-        keys = []
-        
-        for key, value in data.items():
-            keys.append((level, key))
-            # If the value is a dictionary, continue recursion to the next level
-            if isinstance(value, dict):
-                keys.extend(recursive_fetch(ref.child(key), level + 1))
-        
-        return keys
-
+@app.route("/batch/<batch_name>", methods=["GET"])
+def get_batch(batch_name):
     try:
-        # Start from the root of the database
-        root_ref = db.reference("/")
-        all_keys = recursive_fetch(root_ref)
+        # Update click count in the database
+        count_ref = db.reference(f"batch_clicks/{batch_name}")
+        current = count_ref.get() or 0
+        count_ref.set(current + 1)
 
-        # Format the output for better readability
-        result = [{"level": level, "key": key} for level, key in all_keys]
+        # Adjust path if needed based on database structure
+        ref = db.reference(batch_name)  # Assuming the batch is stored directly at root level
+        data = ref.get()
 
-        return jsonify({"success": True, "keys": result})
+        if not data:
+            return jsonify({'success': False, 'error': f'No data found for batch: {batch_name}'}), 404
+
+        # Split the comma-separated string into a clean list of URLs
+        urls = [url.strip() for url in data.split(",") if url.strip()]
+        
+        return jsonify({'success': True, 'urls': urls})
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 
 
@@ -78,8 +71,6 @@ def get_all_casinos():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-import requests
-from flask import Flask, jsonify
 
 app = Flask(__name__)
 
