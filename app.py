@@ -17,7 +17,7 @@ firebase_admin.initialize_app(cred, {
 def home():
     return jsonify({"message": "Backend is working!"})
 
-@app.route("/instructions")
+@app.route('/instructions')
 def get_instructions():
     ref = db.reference("/")  # Root of the database
     data = ref.get()
@@ -27,7 +27,7 @@ def get_instructions():
 
 
 
-@app.route("/batch/<batch_name>", methods=["GET"])
+@app.route('/batch/<batch_name>', methods=["GET"])
 def get_batch(batch_name):
     try:
         # Update click count in the database
