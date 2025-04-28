@@ -27,27 +27,36 @@ def get_instructions():
 
 
 
-@app.route("/batch/<batch_name>", methods=["GET"])
-def get_batch(batch_name):
-    try:
-        # Update click count in the database
-        count_ref = db.reference(f"batch_clicks/{batch_name}")
-        current = count_ref.get() or 0
-        count_ref.set(current + 1)
-
-        # Adjust path if needed based on database structure
-        ref = db.reference(batch_name)  # Assuming the batch is stored directly at root level
+@app.route("/get_all_keys", methods=["GET"])
+def get_all_keys():
+    def recursive_fetch(ref, level=0):
+        """Recursively fetch all keys and print their level."""
         data = ref.get()
-
-        if not data:
-            return jsonify({'success': False, 'error': f'No data found for batch: {batch_name}'}), 404
-
-        # Split the comma-separated string into a clean list of URLs
-        urls = [url.strip() for url in data.split(",") if url.strip()]
         
-        return jsonify({'success': True, 'urls': urls})
+        if data is None:
+            return []
+
+        keys = []
+        
+        for key, value in data.items():
+            keys.append((level, key))
+            # If the value is a dictionary, continue recursion to the next level
+            if isinstance(value, dict):
+                keys.extend(recursive_fetch(ref.child(key), level + 1))
+        
+        return keys
+
+    try:
+        # Start from the root of the database
+        root_ref = db.reference("/")
+        all_keys = recursive_fetch(root_ref)
+
+        # Format the output for better readability
+        result = [{"level": level, "key": key} for level, key in all_keys]
+
+        return jsonify({"success": True, "keys": result})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 
