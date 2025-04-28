@@ -31,7 +31,8 @@ def get_batch(batch_name):
         count_ref = db.reference(f"batch_clicks/{batch_name}")
         current = count_ref.get() or 0
         count_ref.set(current + 1)
-        
+
+        # Reference to the batch in Firebase
         ref = db.reference(batch_name)
         data = ref.get()
 
@@ -40,6 +41,7 @@ def get_batch(batch_name):
 
         # Split the comma-separated string into a clean list of URLs
         urls = [url.strip() for url in data.split(",") if url.strip()]
+        
         return jsonify({'success': True, 'urls': urls})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
