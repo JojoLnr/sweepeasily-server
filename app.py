@@ -14,6 +14,7 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://sweepeasily-default-rtdb.firebaseio.com/'
 })
 
+app = Flask(__name__)
 @app.route("/")
 def home():
     return jsonify({"message": "Backend is working!"})
@@ -70,12 +71,6 @@ def get_all_casinos():
         return jsonify({'success': True, 'casinos': data})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-
-
-app = Flask(__name__)
-
-# Base URL for raw GitHub content (use your actual GitHub username and repo name)
-base_url = "https://raw.githubusercontent.com/JojoLnr/sweepeasily-server/main/GithubImages/"
 
 @app.route("/image/<path:image_path>", methods=["GET"])
 def get_image(image_path):
