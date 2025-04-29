@@ -7,6 +7,7 @@ import requests
 
 app = Flask(__name__)
 CORS(app, origins=["https://sweepeasily.com"])
+base_url = "https://github.com/JojoLnr/sweepeasily-server/blob/main/GithubImages/"
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate("sweepeasily-credentials.json")
@@ -17,8 +18,6 @@ firebase_admin.initialize_app(cred, {
 @app.route("/")
 def home():
     return jsonify({"message": "Backend is working!"})
-
-
 
 @app.route("/batch/<batch_name>", methods=["GET"])
 def get_batch(batch_name):
@@ -41,14 +40,6 @@ def get_batch(batch_name):
         return jsonify({'success': True, 'urls': urls})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-
-
-
-
-
-
-
-
 
 @app.route("/casinos", methods=["GET"])
 def get_all_casinos():
@@ -74,7 +65,6 @@ def get_image(image_path):
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
 
 @app.route('/get_casinos', methods=['GET'])
 def get_casinos():
