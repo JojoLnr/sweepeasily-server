@@ -102,5 +102,21 @@ def get_instructions(casino_key):
         print(f"❌ Error retrieving instructions for {casino_key}:", e)
         return jsonify({"success": False, "message": str(e)}), 500
 
+@app.route('/get_version', methods=['GET'])
+def get_version():
+    try:
+        # Access the "version" node directly
+        ref = db.reference('version')
+        version_value = ref.get()
+
+        if version_value is None:
+            return jsonify({"success": False, "message": "Version not found."}), 404
+
+        return jsonify({"success": True, "version": version_value})
+
+    except Exception as e:
+        print("❌ Error retrieving version:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
+
 if __name__ == "__main__":
     app.run()
