@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect
+from flask import Flask, jsonify, redirect, stream_with_context
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, db
@@ -8,6 +8,7 @@ import requests
 app = Flask(__name__)
 CORS(app, origins=["https://sweepeasily.com"])
 base_url = "https://github.com/JojoLnr/sweepeasily-server/blob/main/GithubImages/"
+GITHUB_FILE_URL = "https://github.com/JojoLnr/sweepeasily-server/releases/download/v1.0/SweepEasily.exe"
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate("sweepeasily-credentials.json")
@@ -117,6 +118,24 @@ def get_version():
     except Exception as e:
         print("❌ Error retrieving version:", e)
         return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/download')
+def download_file():
+    # Request the file from GitHub
+    r = requests.get(GITHUB_FILE_URL, stream=True)
+    
+    # If the request failed, return an error
+    if r.status_code != 200:
+        return f"Error fetching file: {r.status_code}", 500
+
+    # Stream the file to the user with correct headers
+    return Response(
+        stream_with_context(r.iter_content(chunk_size=8192)),
+        headers={
+            'Content-Disposition': 'attachment; filename=SweepEasily.exe',
+            'Content-Type': 'application/octet-stream'
+        }
+    )
 
 if __name__ == "__main__":
     app.run()
