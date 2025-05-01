@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect, stream_with_context
+from flask import Flask, jsonify, redirect, stream_with_context, send_file
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, db
@@ -119,23 +119,13 @@ def get_version():
         print("❌ Error retrieving version:", e)
         return jsonify({"success": False, "message": str(e)}), 500
 
-@app.route('/download')
-def download_file():
-    # Request the file from GitHub
-    r = requests.get(GITHUB_FILE_URL, stream=True)
-    
-    # If the request failed, return an error
-    if r.status_code != 200:
-        return f"Error fetching file: {r.status_code}", 500
-
-    # Stream the file to the user with correct headers
-    return Response(
-        stream_with_context(r.iter_content(chunk_size=8192)),
-        headers={
-            'Content-Disposition': 'attachment; filename=SweepEasily.exe',
-            'Content-Type': 'application/octet-stream'
-        }
-    )
-
+@app.route("/download", methods=["GET"])
+def download():
+    file_path = "static/SweepEasily_v1.0.exe"
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+    else:
+        return jsonify({"success": False, "message": "File not found"}), 404
+        
 if __name__ == "__main__":
     app.run()
