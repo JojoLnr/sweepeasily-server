@@ -137,5 +137,15 @@ def get_key_click():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+@app.route('/app_downloaded', methods=['POST'])
+def app_downloaded():
+    try:
+        ref = db.reference('app_downloaded_count')
+        current = ref.get() or 0
+        ref.set(current + 1)
+        return jsonify({"success": True, "message": "Download tracked."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
 if __name__ == "__main__":
     app.run()
