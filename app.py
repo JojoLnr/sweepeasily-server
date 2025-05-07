@@ -6,7 +6,7 @@ import os
 import requests
 
 app = Flask(__name__)
-CORS(app, origins=["https://sweepeasily.com"])
+CORS(app, origins=["https://sweepeasily.com"], supports_credentials=True)
 base_url = "https://github.com/JojoLnr/sweepeasily-server/blob/main/GithubImages/"
 GITHUB_FILE_URL = "https://github.com/JojoLnr/sweepeasily-server/releases/download/v1.0/SweepEasily.exe"
 
