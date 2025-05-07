@@ -131,7 +131,7 @@ def download():
 def get_key_click():
     try:
         ref = db.reference('get_key_click_count')
-        current = ref.get()
+        current = ref.get() or 0
         ref.set(current + 1)
         return jsonify({"success": True, "message": "Click tracked."})
     except Exception as e:
