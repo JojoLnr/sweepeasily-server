@@ -127,5 +127,15 @@ def download():
     else:
         return jsonify({"success": False, "message": "File not found"}), 404
         
+@app.route('/get_key_click', methods=['POST'])
+def get_key_click():
+    try:
+        ref = db.reference('get_key_click_count')
+        current = ref.get() or 0
+        ref.set(current + 1)
+        return jsonify({"success": True, "message": "Click tracked."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
 if __name__ == "__main__":
     app.run()
