@@ -147,5 +147,15 @@ def app_downloaded():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+@app.route('/scroll_tracked', methods=['POST'])
+def scroll_tracked():
+    try:
+        ref = db.reference('scroll_tracked_count')
+        current = ref.get() or 0
+        ref.set(current + 1)
+        return jsonify({"success": True, "message": "Scroll tracked."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
 if __name__ == "__main__":
     app.run()
